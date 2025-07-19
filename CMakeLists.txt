@@ -19,7 +19,6 @@ else()
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
 
-include(CTest)
 include(FetchContent)
 include(GNUInstallDirs)
 
@@ -30,13 +29,17 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(pugixml)
 
-FetchContent_Declare(
-    Catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG v3.4.0
-)
-FetchContent_MakeAvailable(Catch2)
-include(Catch)
+# Only include testing dependencies if BUILD_TESTING is ON and BUILD_SHARED_LIBS is OFF
+if(BUILD_TESTING AND NOT BUILD_SHARED_LIBS)
+    include(CTest)
+    FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG v3.4.0
+    )
+    FetchContent_MakeAvailable(Catch2)
+    include(Catch)
+endif()
 
 set(SOURCES
     src/Geometries/Arc.cpp
@@ -70,9 +73,12 @@ target_include_directories(
     $<BUILD_INTERFACE:${pugixml_SOURCE_DIR}/src>
 )
 
-add_executable(tests tests/test.cpp)
-target_link_libraries(tests PRIVATE OpenDrive Catch2::Catch2WithMain)
-catch_discover_tests(tests WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+# Only build tests if BUILD_TESTING is ON and BUILD_SHARED_LIBS is OFF
+if(BUILD_TESTING AND NOT BUILD_SHARED_LIBS)
+    add_executable(tests tests/test.cpp)
+    target_link_libraries(tests PRIVATE OpenDrive Catch2::Catch2WithMain) 
+    catch_discover_tests(tests WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+endif()
 
 install(
     TARGETS OpenDrive
