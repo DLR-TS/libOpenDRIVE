@@ -37,7 +37,7 @@ std::cout << road_network_mesh.get_mesh().get_obj() << std::endl;
 ```
 
 ## Build
-To build a static library by default, simply run:
+To build a static library with tests by default, simply run:
 ```bash
 mkdir build
 cd build
@@ -49,6 +49,7 @@ If requiring a shared library, use:
 ```bash
 cmake -DBUILD_SHARED_LIBS=ON ..
 ```
+In this case, tests are deactivated.
 
 ## Viewer
 Check out the viewer at [odrviewer.io](https://odrviewer.io) which uses this library. Use the [odrviewer project](https://github.com/pageldev/odrviewer) to post issues and feature requests for odrviewer.io.
